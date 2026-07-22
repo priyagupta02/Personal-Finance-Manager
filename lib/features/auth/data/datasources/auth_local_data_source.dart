@@ -81,6 +81,27 @@ class AuthLocalDataSource {
     );
   }
 
+  /// Updates the cached user's profile fields (keeping the same session).
+  Future<UserModel> updateProfile({required String name}) async {
+    final raw = await _secureStorage.read(key: _currentUserKey);
+    if (raw == null) {
+      throw const AuthException('No signed-in user to update.');
+    }
+    final current =
+        UserModel.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    final updated = UserModel(
+      id: current.id,
+      name: name,
+      email: current.email,
+      avatarUrl: current.avatarUrl,
+    );
+    await _secureStorage.write(
+      key: _currentUserKey,
+      value: jsonEncode(updated.toJson()),
+    );
+    return updated;
+  }
+
   Future<UserModel?> getCurrentUser() async {
     final token = await _secureStorage.read(key: StorageKeys.authToken);
     if (token == null || token.isEmpty) return null;

@@ -50,6 +50,14 @@ class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
 }
 
+class AuthProfileUpdated extends AuthEvent {
+  const AuthProfileUpdated(this.name);
+  final String name;
+
+  @override
+  List<Object?> get props => [name];
+}
+
 /// Clears the transient error message (e.g. after it has been shown).
 class AuthErrorCleared extends AuthEvent {
   const AuthErrorCleared();

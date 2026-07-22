@@ -60,6 +60,15 @@ class FakeAuthRepository implements AuthRepository {
   Future<Either<Failure, User?>> currentUser() async => Right(_session);
 
   @override
+  Future<Either<Failure, User>> updateProfile({required String name}) async {
+    final current = _session;
+    if (current == null) return const Left(AuthFailure('No user'));
+    final updated = User(id: current.id, name: name, email: current.email);
+    _session = updated;
+    return Right(updated);
+  }
+
+  @override
   Future<String?> rememberedEmail() async => _rememberedEmail;
 
   /// Test helper to seed an existing account.

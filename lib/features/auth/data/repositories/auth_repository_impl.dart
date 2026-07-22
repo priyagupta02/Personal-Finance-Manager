@@ -94,6 +94,18 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, User>> updateProfile({required String name}) async {
+    try {
+      final user = await _local.updateProfile(name: name);
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (_) {
+      return const Left(UnknownFailure());
+    }
+  }
+
+  @override
   Future<String?> rememberedEmail() async => _local.getRememberedEmail();
 
   String _generateToken() {

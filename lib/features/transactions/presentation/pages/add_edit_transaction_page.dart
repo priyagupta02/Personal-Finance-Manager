@@ -271,7 +271,7 @@ class _AmountField extends StatelessWidget {
       validator: Validators.amount,
       decoration: InputDecoration(
         labelText: 'Amount',
-        prefixText: '${CurrencyFormatter.defaultSymbol} ',
+        prefixText: '${CurrencyFormatter.activeSymbol} ',
       ),
     );
   }
