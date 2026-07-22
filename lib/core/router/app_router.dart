@@ -9,6 +9,7 @@ import '../../features/budgets/presentation/pages/budgets_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/receipt_scanner/presentation/pages/receipt_scanner_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
+import '../../features/subscriptions/presentation/pages/subscriptions_page.dart';
 import '../../features/transactions/domain/entities/transaction.dart';
 import '../../features/transactions/presentation/pages/add_edit_transaction_page.dart';
 import '../../features/transactions/presentation/pages/transaction_list_page.dart';
@@ -75,8 +76,7 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.subscriptions,
-        builder: (context, state) =>
-            const PlaceholderPage(title: 'Subscriptions'),
+        builder: (context, state) => const SubscriptionsPage(),
       ),
       GoRoute(
         path: AppRoutes.profile,
