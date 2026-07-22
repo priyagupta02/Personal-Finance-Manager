@@ -2,6 +2,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../features/splash/data/repositories/splash_repository_impl.dart';
+import '../../features/splash/domain/repositories/splash_repository.dart';
+import '../../features/splash/presentation/cubit/splash_cubit.dart';
+
 /// Global service locator.
 ///
 /// Feature modules register their own data sources, repositories, use cases,
@@ -19,7 +23,14 @@ Future<void> configureDependencies() async {
   );
 
   // --- Feature registrations ---------------------------------------------
-  // Registered here as features are implemented, e.g.:
-  //   _initAuth();
-  //   _initTransactions();
+  _initSplash();
+}
+
+void _initSplash() {
+  sl
+    ..registerLazySingleton<SplashRepository>(
+      () => SplashRepositoryImpl(sl<FlutterSecureStorage>()),
+    )
+    // Cubit is per-use (factory) so each splash entry gets a fresh instance.
+    ..registerFactory<SplashCubit>(() => SplashCubit(sl<SplashRepository>()));
 }
