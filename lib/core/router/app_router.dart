@@ -6,6 +6,7 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
+import '../../features/transactions/presentation/pages/transaction_list_page.dart';
 import '../widgets/placeholder_page.dart';
 import 'app_routes.dart';
 
@@ -43,13 +44,17 @@ class AppRouter {
       // --- Placeholder routes (replaced by their features) -----------------
       GoRoute(
         path: AppRoutes.transactions,
-        builder: (context, state) =>
-            const PlaceholderPage(title: 'Transactions'),
+        builder: (context, state) => const TransactionListPage(),
       ),
       GoRoute(
         path: AppRoutes.addTransaction,
         builder: (context, state) =>
             const PlaceholderPage(title: 'Add Transaction'),
+      ),
+      GoRoute(
+        path: AppRoutes.editTransaction,
+        builder: (context, state) =>
+            const PlaceholderPage(title: 'Edit Transaction'),
       ),
       GoRoute(
         path: AppRoutes.budgets,

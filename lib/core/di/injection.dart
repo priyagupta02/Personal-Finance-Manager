@@ -24,7 +24,10 @@ import '../../features/splash/presentation/cubit/splash_cubit.dart';
 import '../../features/transactions/data/datasources/transaction_local_data_source.dart';
 import '../../features/transactions/data/repositories/transaction_repository_impl.dart';
 import '../../features/transactions/domain/repositories/transaction_repository.dart';
+import '../../features/transactions/domain/usecases/delete_transaction.dart';
 import '../../features/transactions/domain/usecases/get_transactions.dart';
+import '../../features/transactions/domain/usecases/query_transactions.dart';
+import '../../features/transactions/presentation/bloc/transaction_list_bloc.dart';
 
 /// Global service locator.
 ///
@@ -94,7 +97,15 @@ Future<void> _initTransactions(Box<String> box) async {
     ..registerLazySingleton<TransactionRepository>(
       () => TransactionRepositoryImpl(sl<TransactionLocalDataSource>()),
     )
-    ..registerLazySingleton(() => GetTransactions(sl<TransactionRepository>()));
+    ..registerLazySingleton(() => GetTransactions(sl<TransactionRepository>()))
+    ..registerLazySingleton(() => QueryTransactions(sl<TransactionRepository>()))
+    ..registerLazySingleton(() => DeleteTransaction(sl<TransactionRepository>()))
+    ..registerFactory<TransactionListBloc>(
+      () => TransactionListBloc(
+        queryTransactions: sl<QueryTransactions>(),
+        deleteTransaction: sl<DeleteTransaction>(),
+      ),
+    );
 }
 
 Future<void> _initBudgets(Box<String> box) async {
