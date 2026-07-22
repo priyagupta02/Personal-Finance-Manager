@@ -7,6 +7,8 @@ import 'package:personal_finance_manager/features/budgets/domain/usecases/get_bu
 import 'package:personal_finance_manager/features/home/presentation/cubit/home_cubit.dart';
 import 'package:personal_finance_manager/features/transactions/domain/entities/transaction.dart';
 import 'package:personal_finance_manager/features/transactions/domain/entities/transaction_enums.dart';
+import 'package:personal_finance_manager/features/transactions/domain/entities/transaction_filter.dart';
+import 'package:personal_finance_manager/features/transactions/domain/entities/transaction_page.dart';
 import 'package:personal_finance_manager/features/transactions/domain/repositories/transaction_repository.dart';
 import 'package:personal_finance_manager/features/transactions/domain/usecases/get_transactions.dart';
 
@@ -19,6 +21,16 @@ class _FakeTxRepo implements TransactionRepository {
     final sorted = [..._items]..sort((a, b) => b.date.compareTo(a.date));
     return Right(sorted);
   }
+
+  @override
+  Future<Either<Failure, TransactionPage>> queryTransactions(
+    TransactionFilter filter,
+  ) async =>
+      Right(TransactionPage(
+        items: _items,
+        hasMore: false,
+        totalCount: _items.length,
+      ));
 
   @override
   Future<Either<Failure, Unit>> addTransaction(Transaction t) async =>
