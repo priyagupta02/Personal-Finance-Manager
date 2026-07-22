@@ -22,6 +22,9 @@ import '../../features/budgets/domain/usecases/get_budgets.dart';
 import '../../features/budgets/domain/usecases/save_budget.dart';
 import '../../features/budgets/presentation/cubit/budget_cubit.dart';
 import '../../features/home/presentation/cubit/home_cubit.dart';
+import '../../features/receipt_scanner/data/datasources/receipt_ocr_service.dart';
+import '../../features/receipt_scanner/domain/receipt_parser.dart';
+import '../../features/receipt_scanner/presentation/cubit/receipt_scanner_cubit.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/presentation/cubit/splash_cubit.dart';
@@ -71,6 +74,22 @@ Future<void> configureDependencies() async {
   await _initBudgets(budgetBox);
   _initHome();
   _initAnalytics();
+  _initReceiptScanner();
+}
+
+void _initReceiptScanner() {
+  sl
+    ..registerLazySingleton<ReceiptOcrService>(() => MlKitReceiptOcrService())
+    ..registerLazySingleton(() => const ReceiptParser())
+    ..registerFactory<ReceiptScannerCubit>(
+      () => ReceiptScannerCubit(
+        imageService: sl<ReceiptImageService>(),
+        ocrService: sl<ReceiptOcrService>(),
+        parser: sl<ReceiptParser>(),
+        addTransaction: sl<AddTransaction>(),
+        now: DateTime.now(),
+      ),
+    );
 }
 
 void _initAnalytics() {
