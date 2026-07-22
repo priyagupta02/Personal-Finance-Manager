@@ -235,7 +235,7 @@ class _ReviewForm extends StatelessWidget {
             validator: Validators.amount,
             decoration: InputDecoration(
               labelText: 'Amount',
-              prefixText: '${CurrencyFormatter.defaultSymbol} ',
+              prefixText: '${CurrencyFormatter.activeSymbol} ',
             ),
           ),
           const SizedBox(height: 16),

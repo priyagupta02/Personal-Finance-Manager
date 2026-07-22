@@ -25,6 +25,8 @@ import '../../features/home/presentation/cubit/home_cubit.dart';
 import '../../features/receipt_scanner/data/datasources/receipt_ocr_service.dart';
 import '../../features/receipt_scanner/domain/receipt_parser.dart';
 import '../../features/receipt_scanner/presentation/cubit/receipt_scanner_cubit.dart';
+import '../../features/settings/data/export_service.dart';
+import '../../features/settings/presentation/cubit/settings_cubit.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/presentation/cubit/splash_cubit.dart';
@@ -84,6 +86,21 @@ Future<void> configureDependencies() async {
   _initAnalytics();
   _initReceiptScanner();
   await _initSubscriptions(subscriptionBox);
+  _initSettings();
+}
+
+void _initSettings() {
+  sl
+    ..registerLazySingleton<SettingsCubit>(
+      () => SettingsCubit(sl<SharedPreferences>()),
+    )
+    ..registerLazySingleton<ExportDataService>(
+      () => ExportDataService(
+        getTransactions: sl<GetTransactions>(),
+        getBudgets: sl<GetBudgets>(),
+        getSubscriptions: sl<GetSubscriptions>(),
+      ),
+    );
 }
 
 Future<void> _initSubscriptions(Box<String> box) async {

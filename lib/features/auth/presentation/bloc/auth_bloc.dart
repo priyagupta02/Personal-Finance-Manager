@@ -33,6 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthGoogleSignInRequested>(_onGoogleSignInRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
+    on<AuthProfileUpdated>(_onProfileUpdated);
     on<AuthErrorCleared>(_onErrorCleared);
   }
 
@@ -113,6 +114,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     await _logout(const NoParams());
     emit(const AuthState(status: AuthStatus.unauthenticated));
+  }
+
+  Future<void> _onProfileUpdated(
+    AuthProfileUpdated event,
+    Emitter<AuthState> emit,
+  ) async {
+    final result = await _repository.updateProfile(name: event.name);
+    result.fold(
+      (failure) => emit(state.copyWith(errorMessage: failure.message)),
+      (user) => emit(state.copyWith(user: user, clearError: true)),
+    );
   }
 
   void _onErrorCleared(AuthErrorCleared event, Emitter<AuthState> emit) {

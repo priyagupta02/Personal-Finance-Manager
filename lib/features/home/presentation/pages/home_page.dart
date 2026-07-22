@@ -49,12 +49,9 @@ class _HomeView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            tooltip: 'Log out',
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthBloc>().add(const AuthLogoutRequested());
-              context.go(AppRoutes.login);
-            },
+            tooltip: 'Profile & settings',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => context.push(AppRoutes.settings),
           ),
         ],
       ),

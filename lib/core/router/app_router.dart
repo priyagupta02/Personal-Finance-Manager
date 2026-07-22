@@ -8,12 +8,12 @@ import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/budgets/presentation/pages/budgets_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/receipt_scanner/presentation/pages/receipt_scanner_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../features/subscriptions/presentation/pages/subscriptions_page.dart';
 import '../../features/transactions/domain/entities/transaction.dart';
 import '../../features/transactions/presentation/pages/add_edit_transaction_page.dart';
 import '../../features/transactions/presentation/pages/transaction_list_page.dart';
-import '../widgets/placeholder_page.dart';
 import 'app_routes.dart';
 
 /// Central navigation configuration built on `go_router`.
@@ -80,11 +80,11 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.profile,
-        builder: (context, state) => const PlaceholderPage(title: 'Profile'),
+        builder: (context, state) => const SettingsPage(),
       ),
       GoRoute(
         path: AppRoutes.settings,
-        builder: (context, state) => const PlaceholderPage(title: 'Settings'),
+        builder: (context, state) => const SettingsPage(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

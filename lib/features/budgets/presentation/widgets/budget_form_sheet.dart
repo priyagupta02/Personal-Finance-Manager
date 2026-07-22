@@ -123,7 +123,7 @@ class _BudgetFormSheetState extends State<BudgetFormSheet> {
                 validator: Validators.amount,
                 decoration: InputDecoration(
                   labelText: 'Limit',
-                  prefixText: '${CurrencyFormatter.defaultSymbol} ',
+                  prefixText: '${CurrencyFormatter.activeSymbol} ',
                 ),
               ),
               const SizedBox(height: 16),

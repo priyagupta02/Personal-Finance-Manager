@@ -35,6 +35,9 @@ abstract class AuthRepository {
   /// The currently signed-in user, or `null` if the session is empty.
   Future<Either<Failure, User?>> currentUser();
 
+  /// Updates the signed-in user's profile (name).
+  Future<Either<Failure, User>> updateProfile({required String name});
+
   /// The remembered email from a previous "Remember Me" login, if any.
   Future<String?> rememberedEmail();
 }

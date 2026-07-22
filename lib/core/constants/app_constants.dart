@@ -26,4 +26,7 @@ class StorageKeys {
   static const String currencyCode = 'currency_code';
   static const String onboardingComplete = 'onboarding_complete';
   static const String biometricEnabled = 'biometric_enabled';
+  static const String notifyBudgetAlerts = 'notify_budget_alerts';
+  static const String notifyRenewals = 'notify_renewals';
+  static const String notifyDailySummary = 'notify_daily_summary';
 }
