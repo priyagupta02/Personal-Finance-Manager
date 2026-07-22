@@ -6,6 +6,8 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
+import '../../features/transactions/domain/entities/transaction.dart';
+import '../../features/transactions/presentation/pages/add_edit_transaction_page.dart';
 import '../../features/transactions/presentation/pages/transaction_list_page.dart';
 import '../widgets/placeholder_page.dart';
 import 'app_routes.dart';
@@ -48,13 +50,13 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.addTransaction,
-        builder: (context, state) =>
-            const PlaceholderPage(title: 'Add Transaction'),
+        builder: (context, state) => const AddEditTransactionPage(),
       ),
       GoRoute(
         path: AppRoutes.editTransaction,
-        builder: (context, state) =>
-            const PlaceholderPage(title: 'Edit Transaction'),
+        builder: (context, state) => AddEditTransactionPage(
+          transaction: state.extra as Transaction?,
+        ),
       ),
       GoRoute(
         path: AppRoutes.budgets,

@@ -21,12 +21,22 @@ import '../../features/home/presentation/cubit/home_cubit.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/presentation/cubit/splash_cubit.dart';
+import '../../features/transactions/data/datasources/receipt_image_service.dart';
+import '../../features/transactions/data/datasources/transaction_draft_local_data_source.dart';
 import '../../features/transactions/data/datasources/transaction_local_data_source.dart';
+import '../../features/transactions/data/repositories/transaction_draft_repository_impl.dart';
 import '../../features/transactions/data/repositories/transaction_repository_impl.dart';
+import '../../features/transactions/domain/repositories/transaction_draft_repository.dart';
 import '../../features/transactions/domain/repositories/transaction_repository.dart';
+import '../../features/transactions/domain/usecases/add_transaction.dart';
+import '../../features/transactions/domain/usecases/clear_draft.dart';
 import '../../features/transactions/domain/usecases/delete_transaction.dart';
 import '../../features/transactions/domain/usecases/get_transactions.dart';
+import '../../features/transactions/domain/usecases/load_draft.dart';
 import '../../features/transactions/domain/usecases/query_transactions.dart';
+import '../../features/transactions/domain/usecases/save_draft.dart';
+import '../../features/transactions/domain/usecases/update_transaction.dart';
+import '../../features/transactions/presentation/bloc/add_edit_transaction_cubit.dart';
 import '../../features/transactions/presentation/bloc/transaction_list_bloc.dart';
 
 /// Global service locator.
@@ -100,10 +110,38 @@ Future<void> _initTransactions(Box<String> box) async {
     ..registerLazySingleton(() => GetTransactions(sl<TransactionRepository>()))
     ..registerLazySingleton(() => QueryTransactions(sl<TransactionRepository>()))
     ..registerLazySingleton(() => DeleteTransaction(sl<TransactionRepository>()))
+    ..registerLazySingleton(() => AddTransaction(sl<TransactionRepository>()))
+    ..registerLazySingleton(() => UpdateTransaction(sl<TransactionRepository>()))
     ..registerFactory<TransactionListBloc>(
       () => TransactionListBloc(
         queryTransactions: sl<QueryTransactions>(),
         deleteTransaction: sl<DeleteTransaction>(),
+      ),
+    )
+    // --- Add/Edit form: drafts, image capture, and the cubit --------------
+    ..registerLazySingleton<TransactionDraftLocalDataSource>(
+      () => TransactionDraftLocalDataSource(sl<SharedPreferences>()),
+    )
+    ..registerLazySingleton<TransactionDraftRepository>(
+      () => TransactionDraftRepositoryImpl(
+        sl<TransactionDraftLocalDataSource>(),
+      ),
+    )
+    ..registerLazySingleton(() => SaveDraft(sl<TransactionDraftRepository>()))
+    ..registerLazySingleton(() => LoadDraft(sl<TransactionDraftRepository>()))
+    ..registerLazySingleton(() => ClearDraft(sl<TransactionDraftRepository>()))
+    ..registerLazySingleton<ReceiptImageService>(
+      () => ReceiptImageServiceImpl(),
+    )
+    ..registerFactory<AddEditTransactionCubit>(
+      () => AddEditTransactionCubit(
+        addTransaction: sl<AddTransaction>(),
+        updateTransaction: sl<UpdateTransaction>(),
+        saveDraft: sl<SaveDraft>(),
+        loadDraft: sl<LoadDraft>(),
+        clearDraft: sl<ClearDraft>(),
+        imageService: sl<ReceiptImageService>(),
+        now: DateTime.now(),
       ),
     );
 }

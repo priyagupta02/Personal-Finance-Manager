@@ -197,7 +197,14 @@ class _SwipeableRow extends StatelessWidget {
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          context.push(AppRoutes.editTransaction);
+          final bloc = context.read<TransactionListBloc>();
+          final changed = await context.push<bool>(
+            AppRoutes.editTransaction,
+            extra: transaction,
+          );
+          if (changed == true) {
+            bloc.add(const TransactionListRefreshed());
+          }
           return false;
         }
         return confirmDelete();

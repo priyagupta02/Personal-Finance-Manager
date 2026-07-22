@@ -79,7 +79,12 @@ class _HomeView extends StatelessWidget {
                 _SummaryGrid(state: state),
                 const SizedBox(height: 20),
                 QuickActions(
-                  onAddTransaction: () => context.push(AppRoutes.addTransaction),
+                  onAddTransaction: () async {
+                    final bloc = context.read<HomeCubit>();
+                    final added =
+                        await context.push<bool>(AppRoutes.addTransaction);
+                    if (added == true) bloc.refresh();
+                  },
                   onViewReports: () => context.push(AppRoutes.analytics),
                   onScanReceipt: () => context.push(AppRoutes.receiptScanner),
                 ),
