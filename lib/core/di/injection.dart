@@ -28,6 +28,13 @@ import '../../features/receipt_scanner/presentation/cubit/receipt_scanner_cubit.
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/presentation/cubit/splash_cubit.dart';
+import '../../features/subscriptions/data/datasources/subscription_local_data_source.dart';
+import '../../features/subscriptions/data/repositories/subscription_repository_impl.dart';
+import '../../features/subscriptions/domain/repositories/subscription_repository.dart';
+import '../../features/subscriptions/domain/usecases/delete_subscription.dart';
+import '../../features/subscriptions/domain/usecases/get_subscriptions.dart';
+import '../../features/subscriptions/domain/usecases/save_subscription.dart';
+import '../../features/subscriptions/presentation/cubit/subscriptions_cubit.dart';
 import '../../features/transactions/data/datasources/receipt_image_service.dart';
 import '../../features/transactions/data/datasources/transaction_draft_local_data_source.dart';
 import '../../features/transactions/data/datasources/transaction_local_data_source.dart';
@@ -66,6 +73,7 @@ Future<void> configureDependencies() async {
   await Hive.initFlutter();
   final transactionBox = await Hive.openBox<String>('transactions');
   final budgetBox = await Hive.openBox<String>('budgets');
+  final subscriptionBox = await Hive.openBox<String>('subscriptions');
 
   // --- Feature registrations ---------------------------------------------
   _initAuth();
@@ -75,6 +83,31 @@ Future<void> configureDependencies() async {
   _initHome();
   _initAnalytics();
   _initReceiptScanner();
+  await _initSubscriptions(subscriptionBox);
+}
+
+Future<void> _initSubscriptions(Box<String> box) async {
+  final dataSource = SubscriptionLocalDataSource(box);
+  await dataSource.seedIfEmpty();
+  sl
+    ..registerLazySingleton<SubscriptionLocalDataSource>(() => dataSource)
+    ..registerLazySingleton<SubscriptionRepository>(
+      () => SubscriptionRepositoryImpl(sl<SubscriptionLocalDataSource>()),
+    )
+    ..registerLazySingleton(
+        () => GetSubscriptions(sl<SubscriptionRepository>()))
+    ..registerLazySingleton(
+        () => SaveSubscription(sl<SubscriptionRepository>()))
+    ..registerLazySingleton(
+        () => DeleteSubscription(sl<SubscriptionRepository>()))
+    ..registerFactory<SubscriptionsCubit>(
+      () => SubscriptionsCubit(
+        getSubscriptions: sl<GetSubscriptions>(),
+        saveSubscription: sl<SaveSubscription>(),
+        deleteSubscription: sl<DeleteSubscription>(),
+        now: DateTime.now(),
+      ),
+    );
 }
 
 void _initReceiptScanner() {
