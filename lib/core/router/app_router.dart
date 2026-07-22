@@ -7,6 +7,7 @@ import '../../features/analytics/presentation/pages/analytics_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/budgets/presentation/pages/budgets_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/receipt_scanner/presentation/pages/receipt_scanner_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../features/transactions/domain/entities/transaction.dart';
 import '../../features/transactions/presentation/pages/add_edit_transaction_page.dart';
@@ -70,8 +71,7 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.receiptScanner,
-        builder: (context, state) =>
-            const PlaceholderPage(title: 'Receipt Scanner'),
+        builder: (context, state) => const ReceiptScannerPage(),
       ),
       GoRoute(
         path: AppRoutes.subscriptions,

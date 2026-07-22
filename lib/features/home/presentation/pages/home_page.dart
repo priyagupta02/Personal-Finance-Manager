@@ -86,7 +86,12 @@ class _HomeView extends StatelessWidget {
                     if (added == true) bloc.refresh();
                   },
                   onViewReports: () => context.push(AppRoutes.analytics),
-                  onScanReceipt: () => context.push(AppRoutes.receiptScanner),
+                  onScanReceipt: () async {
+                    final bloc = context.read<HomeCubit>();
+                    final saved =
+                        await context.push<bool>(AppRoutes.receiptScanner);
+                    if (saved == true) bloc.refresh();
+                  },
                 ),
                 const SizedBox(height: 24),
                 _Section(
