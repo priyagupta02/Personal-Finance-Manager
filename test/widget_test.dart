@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:personal_finance_manager/core/di/injection.dart';
 import 'package:personal_finance_manager/core/router/app_router.dart';
+import 'package:personal_finance_manager/features/auth/domain/usecases/login.dart';
+import 'package:personal_finance_manager/features/auth/domain/usecases/logout.dart';
+import 'package:personal_finance_manager/features/auth/domain/usecases/register.dart';
+import 'package:personal_finance_manager/features/auth/domain/usecases/sign_in_with_google.dart';
+import 'package:personal_finance_manager/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:personal_finance_manager/features/splash/domain/repositories/splash_repository.dart';
 import 'package:personal_finance_manager/features/splash/presentation/cubit/splash_cubit.dart';
+
+import 'features/auth/fake_auth_repository.dart';
 
 class MockSplashRepository extends Mock implements SplashRepository {}
 
 void main() {
+  late AuthBloc authBloc;
+
   setUp(() {
     PackageInfo.setMockInitialValues(
       appName: 'Personal Finance Manager',
@@ -19,30 +29,43 @@ void main() {
       buildSignature: '',
     );
 
-    final repository = MockSplashRepository();
-    when(() => repository.isAuthenticated()).thenAnswer((_) async => false);
+    final splashRepository = MockSplashRepository();
+    when(() => splashRepository.isAuthenticated())
+        .thenAnswer((_) async => false);
 
-    // Register a zero-delay cubit so the splash resolves immediately.
     sl
-      ..registerLazySingleton<SplashRepository>(() => repository)
+      ..registerLazySingleton<SplashRepository>(() => splashRepository)
       ..registerFactory<SplashCubit>(
-        () => SplashCubit(repository, minSplashDuration: Duration.zero),
+        () => SplashCubit(splashRepository, minSplashDuration: Duration.zero),
       );
+
+    final authRepository = FakeAuthRepository();
+    authBloc = AuthBloc(
+      login: Login(authRepository),
+      register: Register(authRepository),
+      logout: Logout(authRepository),
+      signInWithGoogle: SignInWithGoogle(authRepository),
+      repository: authRepository,
+    );
   });
 
-  tearDown(() => sl.reset());
+  tearDown(() async {
+    await authBloc.close();
+    await sl.reset();
+  });
 
-  testWidgets('splash renders branding and routes to Login when signed out',
+  testWidgets('splash routes to the login screen when signed out',
       (tester) async {
     await tester.pumpWidget(
-      MaterialApp.router(routerConfig: AppRouter.router),
+      BlocProvider<AuthBloc>.value(
+        value: authBloc,
+        child: MaterialApp.router(routerConfig: AppRouter.router),
+      ),
     );
 
-    // First frame: splash branding is on screen.
     expect(find.text('Finance Manager'), findsOneWidget);
 
-    // After bootstrap + animations settle, we land on the Login placeholder.
     await tester.pumpAndSettle();
-    expect(find.text('Login'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
   });
 }
