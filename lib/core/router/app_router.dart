@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/analytics/presentation/pages/analytics_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/budgets/presentation/pages/budgets_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -65,7 +66,7 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.analytics,
-        builder: (context, state) => const PlaceholderPage(title: 'Analytics'),
+        builder: (context, state) => const AnalyticsPage(),
       ),
       GoRoute(
         path: AppRoutes.receiptScanner,

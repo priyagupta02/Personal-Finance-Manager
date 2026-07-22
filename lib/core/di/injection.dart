@@ -11,6 +11,7 @@ import '../../features/auth/domain/usecases/logout.dart';
 import '../../features/auth/domain/usecases/register.dart';
 import '../../features/auth/domain/usecases/send_password_reset.dart';
 import '../../features/auth/domain/usecases/sign_in_with_google.dart';
+import '../../features/analytics/presentation/cubit/analytics_cubit.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/bloc/forgot_password_cubit.dart';
 import '../../features/budgets/data/datasources/budget_local_data_source.dart';
@@ -69,6 +70,16 @@ Future<void> configureDependencies() async {
   await _initTransactions(transactionBox);
   await _initBudgets(budgetBox);
   _initHome();
+  _initAnalytics();
+}
+
+void _initAnalytics() {
+  sl.registerFactory<AnalyticsCubit>(
+    () => AnalyticsCubit(
+      getTransactions: sl<GetTransactions>(),
+      now: DateTime.now(),
+    ),
+  );
 }
 
 void _initAuth() {
