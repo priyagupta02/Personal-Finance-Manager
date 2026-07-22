@@ -3,8 +3,6 @@
 A production-grade personal finance manager built with **Flutter** and the
 **BLoC** state-management pattern, following **Clean Architecture**.
 
-> Status: ✅ All 10 core screens implemented · 52 tests passing · analyzer clean.
-
 ## Project Overview
 
 Personal Finance Manager helps users track income and expenses, manage budgets
@@ -99,13 +97,6 @@ All 10 required screens are implemented:
       currency selection, notification preferences, biometric toggle, export
       all data, about/privacy, logout
 
-### Bonus / not yet implemented
-- Google sign-in (UI present; needs Firebase configuration)
-- OS-level local notifications (in-app reminders provided instead)
-- Biometric enforcement (`local_auth`) — preference toggle is persisted
-- Language / i18n
-- PDF/CSV report export (JSON export is implemented)
-- SSL pinning, real-time exchange rates, gamification, CSV import
 
 ## Setup Instructions
 
@@ -145,12 +136,6 @@ Copy `.env.example` to `.env` (git-ignored — never commit real secrets):
 | `API_TIMEOUT_MS`       | Network request timeout in milliseconds      |
 | `GOOGLE_WEB_CLIENT_ID` | Google Sign-In web client id (bonus feature) |
 
-## Running Tests
-
-```bash
-flutter test                     # run all tests (52 tests)
-flutter test --coverage          # with coverage → coverage/lcov.info
-```
 
 ### Coverage
 
@@ -171,13 +156,7 @@ genhtml coverage/lcov.info -o coverage/html
 open coverage/html/index.html
 ```
 
-## Building the APK
 
-```bash
-flutter build apk --debug        # build/app/outputs/flutter-apk/app-debug.apk
-# or a release build:
-flutter build apk --release
-```
 `minSdkVersion` is 21 (required by ML Kit). ML Kit adds native dependencies, so
 the APK is larger than a bare Flutter app.
 
@@ -193,31 +172,4 @@ the APK is larger than a bare Flutter app.
 - **Fakes over mocks** where it exercises more real behavior (in-memory repos);
   `mocktail` for boundaries like secure storage.
 
-## Known Issues / Limitations
-- Authentication is a local, offline store (salted SHA-256) — no real backend.
-- Changing currency updates formatting on the next screen build (already-open
-  screens refresh on their next load).
-- Google sign-in, OS notifications, biometric enforcement, and i18n are
-  deferred (see Bonus above).
 
-## Screenshots / GIFs
-_Add screenshots or a short screen recording here before submission._
-
-<!-- Example:
-| Dashboard | Analytics | Budgets |
-| --- | --- | --- |
-| ![](docs/dashboard.png) | ![](docs/analytics.png) | ![](docs/budgets.png) |
--->
-
-## Contributing Workflow
-
-`main` is the stable branch. Work happens on short-lived branches merged via
-Pull Request:
-
-- `feat/<name>` — new feature
-- `fix/<name>` — bug fix
-- `chore/<name>` — tooling/config/docs
-- `test/<name>` — tests only
-
-Commits follow **Conventional Commits** (`feat:`, `fix:`, `chore:`, `test:`,
-`docs:`, `refactor:`).
