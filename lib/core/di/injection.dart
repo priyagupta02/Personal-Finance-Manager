@@ -16,7 +16,10 @@ import '../../features/auth/presentation/bloc/forgot_password_cubit.dart';
 import '../../features/budgets/data/datasources/budget_local_data_source.dart';
 import '../../features/budgets/data/repositories/budget_repository_impl.dart';
 import '../../features/budgets/domain/repositories/budget_repository.dart';
+import '../../features/budgets/domain/usecases/delete_budget.dart';
 import '../../features/budgets/domain/usecases/get_budgets.dart';
+import '../../features/budgets/domain/usecases/save_budget.dart';
+import '../../features/budgets/presentation/cubit/budget_cubit.dart';
 import '../../features/home/presentation/cubit/home_cubit.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
@@ -154,7 +157,18 @@ Future<void> _initBudgets(Box<String> box) async {
     ..registerLazySingleton<BudgetRepository>(
       () => BudgetRepositoryImpl(sl<BudgetLocalDataSource>()),
     )
-    ..registerLazySingleton(() => GetBudgets(sl<BudgetRepository>()));
+    ..registerLazySingleton(() => GetBudgets(sl<BudgetRepository>()))
+    ..registerLazySingleton(() => SaveBudget(sl<BudgetRepository>()))
+    ..registerLazySingleton(() => DeleteBudget(sl<BudgetRepository>()))
+    ..registerFactory<BudgetCubit>(
+      () => BudgetCubit(
+        getBudgets: sl<GetBudgets>(),
+        getTransactions: sl<GetTransactions>(),
+        saveBudget: sl<SaveBudget>(),
+        deleteBudget: sl<DeleteBudget>(),
+        now: DateTime.now(),
+      ),
+    );
 }
 
 void _initHome() {

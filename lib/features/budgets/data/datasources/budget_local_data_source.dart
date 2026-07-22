@@ -53,24 +53,29 @@ class BudgetLocalDataSource {
           category: TransactionCategory.food,
           limit: 6000,
           period: BudgetPeriod.monthly,
+          alertThreshold: 75,
         ),
         BudgetModel(
           id: 'budget-groceries',
           category: TransactionCategory.groceries,
           limit: 8000,
           period: BudgetPeriod.monthly,
+          alertThreshold: 90,
+          rollover: true,
         ),
         BudgetModel(
           id: 'budget-shopping',
           category: TransactionCategory.shopping,
           limit: 5000,
           period: BudgetPeriod.monthly,
+          alertThreshold: 50,
         ),
         BudgetModel(
           id: 'budget-entertainment',
           category: TransactionCategory.entertainment,
           limit: 3000,
           period: BudgetPeriod.monthly,
+          alertThreshold: 90,
         ),
       ];
 }

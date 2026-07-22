@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/budgets/presentation/pages/budgets_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../features/transactions/domain/entities/transaction.dart';
@@ -60,7 +61,7 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.budgets,
-        builder: (context, state) => const PlaceholderPage(title: 'Budgets'),
+        builder: (context, state) => const BudgetsPage(),
       ),
       GoRoute(
         path: AppRoutes.analytics,
