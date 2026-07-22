@@ -7,6 +7,8 @@ class BudgetModel extends Budget {
     required super.category,
     required super.limit,
     super.period,
+    super.alertThreshold,
+    super.rollover,
   });
 
   factory BudgetModel.fromEntity(Budget b) => BudgetModel(
@@ -14,6 +16,8 @@ class BudgetModel extends Budget {
         category: b.category,
         limit: b.limit,
         period: b.period,
+        alertThreshold: b.alertThreshold,
+        rollover: b.rollover,
       );
 
   factory BudgetModel.fromJson(Map<String, dynamic> json) => BudgetModel(
@@ -22,6 +26,8 @@ class BudgetModel extends Budget {
             TransactionCategory.values.byName(json['category'] as String),
         limit: (json['limit'] as num).toDouble(),
         period: BudgetPeriod.values.byName(json['period'] as String),
+        alertThreshold: json['alertThreshold'] as int? ?? 90,
+        rollover: json['rollover'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,5 +35,7 @@ class BudgetModel extends Budget {
         'category': category.name,
         'limit': limit,
         'period': period.name,
+        'alertThreshold': alertThreshold,
+        'rollover': rollover,
       };
 }
