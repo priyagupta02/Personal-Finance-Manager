@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/auth/data/datasources/auth_local_data_source.dart';
@@ -12,9 +13,18 @@ import '../../features/auth/domain/usecases/send_password_reset.dart';
 import '../../features/auth/domain/usecases/sign_in_with_google.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/bloc/forgot_password_cubit.dart';
+import '../../features/budgets/data/datasources/budget_local_data_source.dart';
+import '../../features/budgets/data/repositories/budget_repository_impl.dart';
+import '../../features/budgets/domain/repositories/budget_repository.dart';
+import '../../features/budgets/domain/usecases/get_budgets.dart';
+import '../../features/home/presentation/cubit/home_cubit.dart';
 import '../../features/splash/data/repositories/splash_repository_impl.dart';
 import '../../features/splash/domain/repositories/splash_repository.dart';
 import '../../features/splash/presentation/cubit/splash_cubit.dart';
+import '../../features/transactions/data/datasources/transaction_local_data_source.dart';
+import '../../features/transactions/data/repositories/transaction_repository_impl.dart';
+import '../../features/transactions/domain/repositories/transaction_repository.dart';
+import '../../features/transactions/domain/usecases/get_transactions.dart';
 
 /// Global service locator.
 ///
@@ -32,9 +42,17 @@ Future<void> configureDependencies() async {
     () => const FlutterSecureStorage(),
   );
 
+  // Local database for structured feature data (transactions, budgets).
+  await Hive.initFlutter();
+  final transactionBox = await Hive.openBox<String>('transactions');
+  final budgetBox = await Hive.openBox<String>('budgets');
+
   // --- Feature registrations ---------------------------------------------
   _initAuth();
   _initSplash();
+  await _initTransactions(transactionBox);
+  await _initBudgets(budgetBox);
+  _initHome();
 }
 
 void _initAuth() {
@@ -66,6 +84,37 @@ void _initAuth() {
     ..registerFactory<ForgotPasswordCubit>(
       () => ForgotPasswordCubit(sl<SendPasswordReset>()),
     );
+}
+
+Future<void> _initTransactions(Box<String> box) async {
+  final dataSource = TransactionLocalDataSource(box);
+  await dataSource.seedIfEmpty();
+  sl
+    ..registerLazySingleton<TransactionLocalDataSource>(() => dataSource)
+    ..registerLazySingleton<TransactionRepository>(
+      () => TransactionRepositoryImpl(sl<TransactionLocalDataSource>()),
+    )
+    ..registerLazySingleton(() => GetTransactions(sl<TransactionRepository>()));
+}
+
+Future<void> _initBudgets(Box<String> box) async {
+  final dataSource = BudgetLocalDataSource(box);
+  await dataSource.seedIfEmpty();
+  sl
+    ..registerLazySingleton<BudgetLocalDataSource>(() => dataSource)
+    ..registerLazySingleton<BudgetRepository>(
+      () => BudgetRepositoryImpl(sl<BudgetLocalDataSource>()),
+    )
+    ..registerLazySingleton(() => GetBudgets(sl<BudgetRepository>()));
+}
+
+void _initHome() {
+  sl.registerFactory<HomeCubit>(
+    () => HomeCubit(
+      getTransactions: sl<GetTransactions>(),
+      getBudgets: sl<GetBudgets>(),
+    ),
+  );
 }
 
 void _initSplash() {
