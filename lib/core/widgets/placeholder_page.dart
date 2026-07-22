@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 /// Temporary scaffold shown while individual feature screens are being built.
 /// Replaced route-by-route as features land.
 class PlaceholderPage extends StatelessWidget {
-  const PlaceholderPage({required this.title, super.key});
+  const PlaceholderPage({required this.title, this.action, super.key});
 
   final String title;
+
+  /// Optional widget (e.g. a button) rendered below the description.
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +41,10 @@ class PlaceholderPage extends StatelessWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
+              if (action != null) ...[
+                const SizedBox(height: 24),
+                action!,
+              ],
             ],
           ),
         ),
