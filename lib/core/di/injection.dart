@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/auth/data/datasources/auth_local_data_source.dart';
+import '../../features/auth/data/datasources/google_auth_service.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/login.dart';
@@ -159,8 +160,14 @@ void _initAuth() {
         secureStorage: sl<FlutterSecureStorage>(),
       ),
     )
+    ..registerLazySingleton<GoogleAuthService>(
+      () => const FirebaseGoogleAuthService(),
+    )
     ..registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(sl<AuthLocalDataSource>()),
+      () => AuthRepositoryImpl(
+        sl<AuthLocalDataSource>(),
+        sl<GoogleAuthService>(),
+      ),
     )
     ..registerLazySingleton(() => Login(sl<AuthRepository>()))
     ..registerLazySingleton(() => Register(sl<AuthRepository>()))
