@@ -13,9 +13,15 @@ part 'settings_state.dart';
 /// and persists them to SharedPreferences. Provided above the router so the
 /// theme and currency take effect immediately.
 class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit(this._prefs) : super(const SettingsState());
+  SettingsCubit(this._prefs, {Future<void> Function()? onNotificationPrefsChanged})
+      : _onNotificationPrefsChanged = onNotificationPrefsChanged,
+        super(const SettingsState());
 
   final SharedPreferences _prefs;
+
+  /// Called after a notification preference changes so reminders can be
+  /// rescheduled immediately (wired to the NotificationScheduler in DI).
+  final Future<void> Function()? _onNotificationPrefsChanged;
 
   void load() {
     final currency =
@@ -53,16 +59,19 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> setNotifyBudgetAlerts(bool v) async {
     await _prefs.setBool(StorageKeys.notifyBudgetAlerts, v);
     emit(state.copyWith(notifyBudgetAlerts: v));
+    await _onNotificationPrefsChanged?.call();
   }
 
   Future<void> setNotifyRenewals(bool v) async {
     await _prefs.setBool(StorageKeys.notifyRenewals, v);
     emit(state.copyWith(notifyRenewals: v));
+    await _onNotificationPrefsChanged?.call();
   }
 
   Future<void> setNotifyDailySummary(bool v) async {
     await _prefs.setBool(StorageKeys.notifyDailySummary, v);
     emit(state.copyWith(notifyDailySummary: v));
+    await _onNotificationPrefsChanged?.call();
   }
 
   ThemeMode _themeFromString(String? value) => switch (value) {
