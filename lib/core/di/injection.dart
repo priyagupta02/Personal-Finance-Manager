@@ -23,6 +23,9 @@ import '../../features/budgets/domain/usecases/get_budgets.dart';
 import '../../features/budgets/domain/usecases/save_budget.dart';
 import '../../features/budgets/presentation/cubit/budget_cubit.dart';
 import '../../features/home/presentation/cubit/home_cubit.dart';
+import '../../features/notifications/data/local_notification_service.dart';
+import '../../features/notifications/data/notification_scheduler.dart';
+import '../../features/notifications/data/push_notification_service.dart';
 import '../../features/receipt_scanner/data/datasources/receipt_ocr_service.dart';
 import '../../features/receipt_scanner/domain/receipt_parser.dart';
 import '../../features/receipt_scanner/presentation/cubit/receipt_scanner_cubit.dart';
@@ -87,13 +90,36 @@ Future<void> configureDependencies() async {
   _initAnalytics();
   _initReceiptScanner();
   await _initSubscriptions(subscriptionBox);
+  _initNotifications();
   _initSettings();
+}
+
+void _initNotifications() {
+  sl
+    ..registerLazySingleton<LocalNotificationService>(
+      () => LocalNotificationService(),
+    )
+    ..registerLazySingleton<PushNotificationService>(
+      () => PushNotificationService(sl<LocalNotificationService>()),
+    )
+    ..registerLazySingleton<NotificationScheduler>(
+      () => NotificationScheduler(
+        local: sl<LocalNotificationService>(),
+        prefs: sl<SharedPreferences>(),
+        getSubscriptions: sl<GetSubscriptions>(),
+        getBudgets: sl<GetBudgets>(),
+        getTransactions: sl<GetTransactions>(),
+      ),
+    );
 }
 
 void _initSettings() {
   sl
     ..registerLazySingleton<SettingsCubit>(
-      () => SettingsCubit(sl<SharedPreferences>()),
+      () => SettingsCubit(
+        sl<SharedPreferences>(),
+        onNotificationPrefsChanged: () => sl<NotificationScheduler>().sync(),
+      ),
     )
     ..registerLazySingleton<ExportDataService>(
       () => ExportDataService(
