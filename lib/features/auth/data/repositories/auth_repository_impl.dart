@@ -8,12 +8,14 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
+import '../datasources/google_auth_service.dart';
 import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._local);
+  const AuthRepositoryImpl(this._local, this._google);
 
   final AuthLocalDataSource _local;
+  final GoogleAuthService _google;
 
   @override
   Future<Either<Failure, User>> login({
@@ -56,11 +58,17 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> signInWithGoogle() async {
-    // Bonus: requires Firebase/Google configuration. Fails gracefully until
-    // GOOGLE_WEB_CLIENT_ID is wired up.
-    return const Left(
-      AuthFailure('Google sign-in is not configured yet.'),
-    );
+    try {
+      final user = await _google.signIn();
+      await _local.cacheSession(user, _generateToken());
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (_) {
+      return const Left(
+        AuthFailure('Google sign-in failed. Please try again.'),
+      );
+    }
   }
 
   @override
@@ -77,6 +85,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, Unit>> logout() async {
     try {
       await _local.clearSession();
+      // Best-effort Google/Firebase sign-out; ignore if it wasn't a Google
+      // session or Firebase isn't configured.
+      try {
+        await _google.signOut();
+      } catch (_) {}
       return const Right(unit);
     } catch (_) {
       return const Left(CacheFailure('Could not sign out. Please try again.'));

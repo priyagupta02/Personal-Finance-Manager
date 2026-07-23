@@ -71,8 +71,8 @@ All 10 required screens are implemented:
 
 - [x] **Splash** — animated fade-in logo, version display, auth-based routing
 - [x] **Authentication** — login/register, real-time validation, password
-      visibility toggle, Remember Me, forgot-password flow (Google sign-in
-      button present, pending Firebase config)
+      visibility toggle, Remember Me, forgot-password flow, and Google
+      sign-in via Firebase Auth (see Firebase Setup)
 - [x] **Home Dashboard** — balance/income/expense/savings cards, quick actions,
       monthly spending chart, recent transactions (pull-to-refresh), budget
       overview
@@ -134,8 +134,32 @@ Copy `.env.example` to `.env` (git-ignored — never commit real secrets):
 | `APP_ENV`              | `development` / `production`                 |
 | `API_BASE_URL`         | Base URL for the backend API                 |
 | `API_TIMEOUT_MS`       | Network request timeout in milliseconds      |
-| `GOOGLE_WEB_CLIENT_ID` | Google Sign-In web client id (bonus feature) |
+| `GOOGLE_WEB_CLIENT_ID` | Google Sign-In web/server client id (see Firebase Setup) |
 
+## Firebase Setup (Google Sign-In)
+
+Google Sign-In runs on Firebase Auth. The code is wired and guarded — the app
+builds and runs without Firebase (Google sign-in just stays disabled). To
+enable it:
+
+1. Create a Firebase project at <https://console.firebase.google.com>.
+2. Install the CLI and configure the app (regenerates `lib/firebase_options.dart`):
+   ```bash
+   dart pub global activate flutterfire_cli
+   flutterfire configure
+   ```
+3. In the Firebase console → **Authentication → Sign-in method**, enable **Google**.
+4. For Android, add your signing **SHA-1** (and SHA-256) fingerprints to the
+   Firebase Android app, then re-download config:
+   ```bash
+   cd android && ./gradlew signingReport   # copy the debug SHA-1
+   ```
+5. Put the **Web client ID** (from the Google provider / `google-services.json`
+   `client_type: 3`) into `.env` as `GOOGLE_WEB_CLIENT_ID` — required for the
+   Android ID token.
+
+`lib/firebase_options.dart` ships as a placeholder and is overwritten by
+`flutterfire configure`.
 
 ### Coverage
 
