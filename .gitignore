@@ -58,3 +58,11 @@ lcov.info
 *.jks
 *.keystore
 key.properties
+
+# Firebase config — generated per-project by `flutterfire configure`.
+# Not committed (contains project-specific client config / API keys); the app
+# is guarded and builds without it. Run `flutterfire configure` to generate.
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+firebase.json
+android/.kotlin/
